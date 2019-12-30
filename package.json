@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "nyc --reporter=text mocha --require babel-register api/tests/*.js --exit --timeout 10000",
+    "test:watch": "mocha --watch",
     "start": "babel-watch server.js"
   },
   "repository": {

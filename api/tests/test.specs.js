@@ -5,9 +5,16 @@ import app from "../index";
 chai.use(chaiHTTP);
 
 describe('Fetch all fashion model products', ()=> {
-    it('Should retrieve trending products', (done) => {
-        request(app).get('/').end((err, res) => {
-            expect(res.body.status).to.be.equal(200);
+    it('Should create new user', (done) => {
+        const data = {
+            firstname: "Eliezer",
+            lastname: "Basubi",
+            email: "eliezer.basubi30@gmail.com",
+            password: "eliezerbas1234",
+        }
+
+        request(app).post('/auth/signup').send(data).end((err, res) => {
+            console.log(res.body);
             done();
         })
     })

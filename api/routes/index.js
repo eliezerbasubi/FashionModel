@@ -1,12 +1,9 @@
 import express from 'express';
+import authRouter from './auth/auth.route';
 
 const indexRouter = express.Router();
 
-indexRouter.get('/', (req, res, next) => {
-    res.status(200).json({
-        status: 200,
-        message: 'Data successfully fetched'
-    });
-});
+// Auth route
+indexRouter.use(authRouter);
 
 export default indexRouter;

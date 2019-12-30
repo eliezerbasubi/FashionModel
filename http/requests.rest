@@ -1,1 +1,14 @@
 GET http://127.0.0.1:5000 HTTP/1.1
+
+
+###
+
+POST http://127.0.0.1:5000/auth/signup HTTP/1.1
+content-type: application/json
+
+{
+    "firstname": "Eliezer",
+    "lastname": "Basubi",
+    "email": "eliezer.basubi30@gmail.com",
+    "password": "eliezerbas1234"
+}
