@@ -4,7 +4,7 @@
   "description": "A Fashion app",
   "main": "index.js",
   "scripts": {
-    "test": "nyc --reporter=text mocha --require babel-register server/tests/*.js --exit --timeout 10000",
+    "test": "nyc --reporter=text mocha --require babel-register api/tests/*.js --exit --timeout 10000",
     "start": "babel-watch server.js"
   },
   "repository": {
@@ -29,6 +29,7 @@
     "dotenv": "^8.1.0",
     "express": "^4.17.1",
     "joi": "^14.3.1",
+    "mongoose": "^5.8.3",
     "pg": "^7.12.1"
   },
   "devDependencies": {
