@@ -9,6 +9,9 @@ content-type: application/json
 {
     "firstname": "Eliezer",
     "lastname": "Basubi",
-    "email": "eliezer.basubi30@gmail.com",
-    "password": "eliezerbas1234"
+    "email": "eliezer.basubi3@gmail.com",
+    "password": "user1234",
+    "phoneNumber": "0975889758",
+    "address": "Bukavu, DRC",
+    "isAdmin": true
 }

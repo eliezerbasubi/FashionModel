@@ -10,7 +10,7 @@ const PORT = 5000 || process.env.PORT;
 
 const server = http.createServer(app);
 
-mongoose.connect(process.env.DATABASE_URL, { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect(process.env.DATABASE_URL, { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true });
 
 mongoose.connection.once('open', () => console.log('Database Connection established')
 ).on('error', (error) => console.error(error));
