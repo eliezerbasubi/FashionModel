@@ -4,10 +4,11 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 
 import app from "../index";
-import { userCredentials, missingParameter } from '../data/data';
-import { CREATED_CODE, BAD_REQUEST_CODE, UNPROCESSABLE_ENTITY, RESOURCE_CONFLICT, METHOD_NOT_FOUND } from '../constants/responseCodes';
+import { userCredentials, missingParameter, routes, JSON_TYPE, logData } from '../data/data';
+import { CREATED_CODE, BAD_REQUEST_CODE, UNPROCESSABLE_ENTITY, RESOURCE_CONFLICT, METHOD_NOT_FOUND, SUCCESS_CODE, UNAUTHORIZED_CODE } from '../constants/responseCodes';
 import { AUTHENTIFICATED_MSG } from '../constants/feedback';
-import { METHOD_NOT_FOUND_MSG } from '../constants/responseMessages';
+import { METHOD_NOT_FOUND_MSG, UNAUTHORIZED_ACCESS } from '../constants/responseMessages';
+import { it } from 'mocha';
 
 chai.use(chaiHTTP);
 
@@ -34,46 +35,76 @@ describe('API Routers', () => {
 });
 
 describe('User authentication Endpoint', ()=> {
-    it('Should create new user', (done) => {
-        request(app)
-        .post('/auth/signup')
-        .set('Accept', 'application/json')
-        .send(userCredentials).end((err, res) => {
-            expect(res.body.status).to.be.equal(CREATED_CODE);
-            expect(res.body.message).equal(AUTHENTIFICATED_MSG);
-            expect(res.body).to.haveOwnProperty('data');
-            done();
+    describe('User should be able to sign up', ()=> {
+        it('Should create new user', (done) => {
+            request(app)
+            .post(routes.signUp)
+            .set('Accept', JSON_TYPE)
+            .send(userCredentials).end((err, res) => {
+                expect(res.body.status).to.be.equal(CREATED_CODE);
+                expect(res.body.message).equal(AUTHENTIFICATED_MSG);
+                expect(res.body).to.haveOwnProperty('data');
+                done();
+            });
+        });
+    
+        it('Should not duplicate users', (done) => {
+            request(app)
+            .post(routes.signUp)
+            .set('Accept', JSON_TYPE)
+            .send(userCredentials).end((err, res) => {
+                expect(res.body.status).to.be.equal(BAD_REQUEST_CODE);
+                done();
+            });
+        });
+        it('Should not validate user with missing required parameters', (done) => {
+            request(app)
+            .post(routes.signUp)
+            .set('Accept', JSON_TYPE)
+            .send(missingParameter).end((err, res) => {
+                expect(res.body.status).to.be.equal(UNPROCESSABLE_ENTITY);
+                expect(res.body).to.haveOwnProperty('error');
+                done();
+            });
+        });
+        it('Should validate user email', (done) => {
+            userCredentials.email = "eliezer.basubi30gmail.com";
+            request(app)
+            .post(routes.signUp)
+            .set('Accept', JSON_TYPE)
+            .send(userCredentials).end((err, res) => {
+                expect(res.body.status).to.be.equal(RESOURCE_CONFLICT);
+                expect(res.body).to.haveOwnProperty('error');
+                done();
+            });
         });
     });
 
-    it('Should not duplicate users', (done) => {
-        request(app)
-        .post('/auth/signup')
-        .set('Accept', 'application/json')
-        .send(userCredentials).end((err, res) => {
-            expect(res.body.status).to.be.equal(BAD_REQUEST_CODE);
-            done();
+    describe('User should be able to sign in', ()=> {
+        it('Should log in user', (done) =>{
+            request(app)
+            .post(routes.signIn)
+            .send(logData)
+            .set('Accept', JSON_TYPE)
+            .end((err, res) => {
+                expect(res).to.have.status(SUCCESS_CODE);
+                expect(res.type).to.be.equal(JSON_TYPE);
+                expect(res.body.message).to.be.equal('Auth successful');
+                done();
+            });
         });
-    });
-    it('Should not validate user with missing required parameters', (done) => {
-        request(app)
-        .post('/auth/signup')
-        .set('Accept', 'application/json')
-        .send(missingParameter).end((err, res) => {
-            expect(res.body.status).to.be.equal(UNPROCESSABLE_ENTITY);
-            expect(res.body).to.haveOwnProperty('error');
-            done();
-        });
-    });
-    it('Should validate user email', (done) => {
-        userCredentials.email = "eliezer.basubi30gmail.com";
-        request(app)
-        .post('/auth/signup')
-        .set('Accept', 'application/json')
-        .send(userCredentials).end((err, res) => {
-            expect(res.body.status).to.be.equal(RESOURCE_CONFLICT);
-            expect(res.body).to.haveOwnProperty('error');
-            done();
+
+        it('Should reject unauthenticated user', (done) => {
+            logData.email = "eliezer.basubi400@gmail.com";
+            request(app)
+            .post(routes.signIn)
+            .send(logData)
+            .set('Accept', JSON_TYPE)
+            .end((err, res) => {
+                expect(res).to.have.status(UNAUTHORIZED_CODE);
+                expect(res.body.error).to.be.equal(UNAUTHORIZED_ACCESS);
+                done();
+            });
         });
     });
 })
