@@ -1,7 +1,14 @@
 import Helper from "../helpers/helper";
-import { CREATED_CODE, BAD_REQUEST_CODE, RESOURCE_CONFLICT } from '../constants/responseCodes'
+import { CREATED_CODE, BAD_REQUEST_CODE, RESOURCE_CONFLICT, UNAUTHORIZED_CODE, SUCCESS_CODE } from '../constants/responseCodes'
 import { AUTHENTIFICATED_MSG, EMAIL_ALREADY_EXIST } from "../constants/feedback";
 import User from '../models/db/user';
+import { UNAUTHORIZED_ACCESS } from "../constants/responseMessages";
+
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv'
+
+
+dotenv.config();
 
 export default class Auth { 
     static async signUp(req, res) {
@@ -24,6 +31,24 @@ export default class Auth {
             Helper.success(res, CREATED_CODE, newUser, AUTHENTIFICATED_MSG);
         } catch (error) {
             Helper.error(res, RESOURCE_CONFLICT, error.message);
+        }
+    }
+
+    static async signIn (req, res) {
+        const { email, password } = req.body;
+        const user = await User.findOne({ email: email, password: password });
+        if(user){
+            const { isAdmin, userId, _id, firstname, lastname, phoneNumber, address} = user;
+
+            const token = jwt.sign({ email, userId, isAdmin }, process.env.JWT_TOKEN, {
+                expiresIn: '24h'
+            });
+            const userData = { token, _id, firstname, lastname, email, phoneNumber, address }
+           
+            Helper.success(res, SUCCESS_CODE, userData, 'Auth successful');
+        }
+        else{
+            Helper.error(res, UNAUTHORIZED_CODE, UNAUTHORIZED_ACCESS);
         }
     }
 }
