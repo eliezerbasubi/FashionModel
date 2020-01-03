@@ -1,9 +1,10 @@
-GET http://127.0.0.1:5000 HTTP/1.1
+@baseURL = http://127.0.0.1:5000
 
+GET {{baseURL}} HTTP/1.1
 
 ###
 
-POST http://127.0.0.1:5000/auth/signup HTTP/1.1
+POST {{baseURL}}/auth/signup HTTP/1.1
 content-type: application/json
 
 {
@@ -18,10 +19,21 @@ content-type: application/json
 
 ###
 
-POST http://127.0.0.1:5000/auth/signin HTTP/1.1
+POST {{baseURL}}/auth/signin HTTP/1.1
 Content-Type: application/json
 
 {
-    "email": "eliezer.basubi@gmail.com",
-    "password": "user1234"
+    "email": "eliezer.basubi3@gmail.com",
+    "password": "userBasubi1234"
+}
+
+###
+PATCH {{baseURL}}/auth/reset/5e0b1faeab3b34025caa8b15
+Content-Type: application/json
+Authorization: token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImVsaWV6ZXIuYmFzdWJpQGdtYWlsLmNvbSIsImlzQWRtaW4iOnRydWUsImlhdCI6MTU3ODA2NzU3MCwiZXhwIjoxNTc4MTUzOTcwfQ.auGVJh7iNojX-OhM7VtFRS_dAcn2OfBigi5Pq9X8rhc
+
+{
+    "old_password": "userBasubi1234",
+    "new_password": "userBasubi12",
+    "confirm_password": "userBasubi12"
 }

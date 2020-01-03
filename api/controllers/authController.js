@@ -1,6 +1,6 @@
 import Helper from "../helpers/helper";
-import { CREATED_CODE, BAD_REQUEST_CODE, RESOURCE_CONFLICT, UNAUTHORIZED_CODE, SUCCESS_CODE } from '../constants/responseCodes'
-import { AUTHENTIFICATED_MSG, EMAIL_ALREADY_EXIST } from "../constants/feedback";
+import { CREATED_CODE, BAD_REQUEST_CODE, RESOURCE_CONFLICT, UNAUTHORIZED_CODE, SUCCESS_CODE, NOT_FOUND_CODE, INTERNAL_SERVER_ERROR_CODE } from '../constants/responseCodes'
+import { AUTHENTIFICATED_MSG, EMAIL_ALREADY_EXIST, OLD_PASSWORD_NOT_MATCH, RESET_SUCCESSFUL } from "../constants/feedback";
 import User from '../models/db/user';
 import { UNAUTHORIZED_ACCESS } from "../constants/responseMessages";
 
@@ -49,6 +49,20 @@ export default class Auth {
         }
         else{
             Helper.error(res, UNAUTHORIZED_CODE, UNAUTHORIZED_ACCESS);
+        }
+    }
+
+    static async resetPassword (req, res) {
+        try {
+            const { _id } = res.user;
+            const { new_password } = req.body;
+            res.user.password = new_password;
+            // const updatedData = await User.findOneAndUpdate({ _id }, { password: new_password });
+            const updatedData = await res.user.save();
+            updatedData.password = undefined;
+            Helper.success(res, SUCCESS_CODE, updatedData, RESET_SUCCESSFUL);
+        } catch (error) {
+            Helper.error(res, INTERNAL_SERVER_ERROR_CODE, error.message);
         }
     }
 }
